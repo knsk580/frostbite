@@ -53,6 +53,7 @@ app.post('/api/chat', async (req, res) => {
                 type: "file_search",
                 vector_store_ids: [vectorStoreId]
             }],
+            max_output_tokens: 10000
         };
 
         console.log('OpenAI Request:', JSON.stringify(requestPayload, null, 2));
