@@ -159,14 +159,14 @@ class ChatApp {
                     <h6 class="text-body mb-2">
                         <i class="bi bi-arrow-up-circle"></i> リクエスト
                     </h6>
-                    <pre class="json-display"><code>${this.formatJSON(debug.request)}</code></pre>
+                    <pre class="json-display"><code class="language-json">${this.escapeHtml(JSON.stringify(debug.request, null, 2))}</code></pre>
                 </div>
                 
                 <div class="mb-4">
                     <h6 class="text-body mb-2">
                         <i class="bi bi-arrow-down-circle"></i> レスポンス
                     </h6>
-                    <pre class="json-display"><code>${this.formatJSON(debug.response)}</code></pre>
+                    <pre class="json-display"><code class="language-json">${this.escapeHtml(JSON.stringify(debug.response, null, 2))}</code></pre>
                 </div>
                 
                 <hr class="my-4">
@@ -176,7 +176,18 @@ class ChatApp {
         // プレースホルダー以外の既存コンテンツの前に追加
         const existingContent = this.outputContainer.innerHTML.replace(this.placeholderMessage.outerHTML, '');
         this.outputContainer.innerHTML = debugHTML + existingContent;
+
+        // Prism.jsでシンタックスハイライトを適用
+        this.highlightCode();
+
         this.outputContainer.scrollTop = 0;
+    }
+
+    highlightCode() {
+        // Prism.jsでシンタックスハイライトを適用
+        if (typeof Prism !== 'undefined') {
+            Prism.highlightAll();
+        }
     }
 
     formatJSON(obj) {
