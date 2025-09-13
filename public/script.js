@@ -3,7 +3,6 @@ class ChatApp {
         this.chatContainer = document.getElementById('chatContainer');
         this.messageInput = document.getElementById('messageInput');
         this.chatForm = document.getElementById('chatForm');
-        this.sendButton = document.getElementById('sendButton');
         this.typingIndicator = document.getElementById('typingIndicator');
 
         this.init();
@@ -13,11 +12,17 @@ class ChatApp {
         // フォームの送信イベントを設定
         this.chatForm.addEventListener('submit', (e) => this.handleSubmit(e));
 
-        // Enterキーでの送信を設定
-        this.messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.handleSubmit(e);
+        // キーボードイベントを設定
+        this.messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (e.shiftKey) {
+                    // Shift+Enter: 改行（デフォルト動作を許可）
+                    return;
+                } else {
+                    // Enter: 送信
+                    e.preventDefault();
+                    this.handleSubmit(e);
+                }
             }
         });
 
@@ -37,8 +42,8 @@ class ChatApp {
         // 入力フィールドをクリア
         this.messageInput.value = '';
 
-        // 送信ボタンを無効化
-        this.setSendButtonState(false);
+        // 入力フィールドを無効化
+        this.setInputState(false);
 
         // タイピングインジケーターを表示
         this.showTypingIndicator();
@@ -65,8 +70,8 @@ class ChatApp {
                 'ai'
             );
         } finally {
-            // 送信ボタンを有効化
-            this.setSendButtonState(true);
+            // 入力フィールドを有効化
+            this.setInputState(true);
 
             // 入力フィールドにフォーカス
             this.messageInput.focus();
@@ -113,14 +118,13 @@ class ChatApp {
         this.typingIndicator.style.display = 'none';
     }
 
-    setSendButtonState(enabled) {
-        this.sendButton.disabled = !enabled;
+    setInputState(enabled) {
         this.messageInput.disabled = !enabled;
 
         if (enabled) {
-            this.sendButton.innerHTML = '<i class="bi bi-send"></i> 送信';
+            this.messageInput.placeholder = 'メッセージを入力してください...';
         } else {
-            this.sendButton.innerHTML = '<i class="bi bi-hourglass-split"></i> 送信中...';
+            this.messageInput.placeholder = '送信中...';
         }
     }
 
