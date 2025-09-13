@@ -43,8 +43,8 @@ app.post('/api/chat', async (req, res) => {
             return res.status(500).json({ error: 'Vector Store IDが設定されていません。' });
         }
 
-        // OpenAI Responses APIを使用
-        const response = await client.responses.create({
+        // OpenAI Responses APIリクエスト
+        const requestPayload = {
             model: "gpt-4o-mini",
             input: [
                 { role: "user", content: message },
@@ -53,10 +53,20 @@ app.post('/api/chat', async (req, res) => {
                 type: "file_search",
                 vector_store_ids: [vectorStoreId]
             }],
-        });
+        };
+
+        console.log('OpenAI Request:', JSON.stringify(requestPayload, null, 2));
+
+        const response = await client.responses.create(requestPayload);
+
+        console.log('OpenAI Response:', JSON.stringify(response, null, 2));
 
         res.json({
-            message: response.output_text || 'すみません、回答を生成できませんでした。'
+            message: response.output_text || 'すみません、回答を生成できませんでした。',
+            debug: {
+                request: requestPayload,
+                response: response
+            }
         });
 
     } catch (error) {

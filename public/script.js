@@ -4,6 +4,8 @@ class ChatApp {
         this.messageInput = document.getElementById('messageInput');
         this.chatForm = document.getElementById('chatForm');
         this.typingIndicator = document.getElementById('typingIndicator');
+        this.outputContainer = document.getElementById('outputContainer');
+        this.placeholderMessage = document.getElementById('placeholderMessage');
 
         this.init();
     }
@@ -57,6 +59,11 @@ class ChatApp {
 
             // AI応答を表示
             this.addMessage(response.message, 'ai');
+
+            // デバッグ情報を出力エリアに表示
+            if (response.debug) {
+                this.displayDebugInfo(response.debug);
+            }
 
         } catch (error) {
             console.error('Error:', error);
@@ -126,6 +133,48 @@ class ChatApp {
 
     scrollToBottom() {
         this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+    }
+
+    displayDebugInfo(debug) {
+        // プレースホルダーメッセージを非表示
+        if (this.placeholderMessage) {
+            this.placeholderMessage.style.display = 'none';
+        }
+
+        const timestamp = new Date().toLocaleTimeString();
+
+        const debugHTML = `
+            <div class="debug-section">
+                <h6 class="text-primary mb-3">
+                    <i class="bi bi-clock"></i> ${timestamp}
+                </h6>
+                
+                <div class="mb-4">
+                    <h6 class="text-body mb-2">
+                        <i class="bi bi-arrow-up-circle"></i> リクエスト
+                    </h6>
+                    <pre class="json-display"><code>${this.formatJSON(debug.request)}</code></pre>
+                </div>
+                
+                <div class="mb-4">
+                    <h6 class="text-body mb-2">
+                        <i class="bi bi-arrow-down-circle"></i> レスポンス
+                    </h6>
+                    <pre class="json-display"><code>${this.formatJSON(debug.response)}</code></pre>
+                </div>
+                
+                <hr class="my-4">
+            </div>
+        `;
+
+        // プレースホルダー以外の既存コンテンツの前に追加
+        const existingContent = this.outputContainer.innerHTML.replace(this.placeholderMessage.outerHTML, '');
+        this.outputContainer.innerHTML = debugHTML + existingContent;
+        this.outputContainer.scrollTop = 0;
+    }
+
+    formatJSON(obj) {
+        return this.escapeHtml(JSON.stringify(obj, null, 2));
     }
 
     escapeHtml(text) {

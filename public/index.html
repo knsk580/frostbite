@@ -42,6 +42,31 @@
             background-color: #f8f9fa;
         }
 
+        .json-display {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .debug-section {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .debug-section h6 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
         .message {
             margin-bottom: 1rem;
             padding: 0.75rem;
@@ -167,7 +192,7 @@
                     </div>
                     <div class="card-body">
                         <div id="outputContainer" class="output-container">
-                            <div class="text-center text-muted mt-5">
+                            <div id="placeholderMessage" class="text-center text-muted mt-5">
                                 <i class="bi bi-file-text-fill" style="font-size: 3rem;"></i>
                                 <p class="mt-3">ここに出力が表示されます</p>
                                 <small>現在は何も出力されていません</small>
