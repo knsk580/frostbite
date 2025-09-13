@@ -50,9 +50,16 @@ class ChatApp {
         // タイピングインジケーターを表示
         this.showTypingIndicator();
 
+        // レスポンス時間の計測開始
+        const startTime = performance.now();
+
         try {
             // AIからの応答を取得
             const response = await this.sendMessage(message);
+
+            // レスポンス時間の計測終了
+            const endTime = performance.now();
+            const responseTime = Math.round(endTime - startTime);
 
             // タイピングインジケーターを非表示
             this.hideTypingIndicator();
@@ -60,9 +67,9 @@ class ChatApp {
             // AI応答を表示
             this.addMessage(response.message, 'ai');
 
-            // デバッグ情報を出力エリアに表示
+            // デバッグ情報を出力エリアに表示（レスポンス時間を含む）
             if (response.debug) {
-                this.displayDebugInfo(response.debug);
+                this.displayDebugInfo(response.debug, responseTime);
             }
 
         } catch (error) {
@@ -141,7 +148,7 @@ class ChatApp {
         this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
     }
 
-    displayDebugInfo(debug) {
+    displayDebugInfo(debug, responseTime) {
         // プレースホルダーメッセージを非表示
         if (this.placeholderMessage) {
             this.placeholderMessage.style.display = 'none';
@@ -152,7 +159,8 @@ class ChatApp {
         const debugHTML = `
             <div class="debug-section">
                 <h6 class="text-primary mb-3">
-                    <i class="bi bi-clock"></i> ${timestamp}
+                    <i class="bi bi-stopwatch"></i> レスポンス時間: ${responseTime}ms
+                    <small class="text-muted ms-2">(${timestamp})</small>
                 </h6>
                 
                 <div class="mb-4">
