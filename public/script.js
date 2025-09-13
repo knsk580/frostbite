@@ -6,6 +6,7 @@ class ChatApp {
         this.typingIndicator = document.getElementById('typingIndicator');
         this.outputContainer = document.getElementById('outputContainer');
         this.placeholderMessage = document.getElementById('placeholderMessage');
+        this.lastResponseId = null;
 
         this.init();
     }
@@ -67,6 +68,11 @@ class ChatApp {
             // AI応答を表示
             this.addMessage(response.message, 'ai');
 
+            // レスポンスIDを保存（次のリクエストで使用）
+            if (response.responseId) {
+                this.lastResponseId = response.responseId;
+            }
+
             // デバッグ情報を出力エリアに表示（レスポンス時間を含む）
             if (response.debug) {
                 this.displayDebugInfo(response.debug, responseTime);
@@ -93,12 +99,19 @@ class ChatApp {
     }
 
     async sendMessage(message) {
+        const requestBody = { message };
+
+        // 前回のレスポンスIDがある場合は追加
+        if (this.lastResponseId) {
+            requestBody.previousResponseId = this.lastResponseId;
+        }
+
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message }),
+            body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {

@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 // チャットAPIエンドポイント
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message } = req.body;
+        const { message, previousResponseId } = req.body;
 
         if (!message) {
             return res.status(400).json({ error: 'メッセージが必要です。' });
@@ -56,6 +56,11 @@ app.post('/api/chat', async (req, res) => {
             max_output_tokens: 10000
         };
 
+        // previous_response_idが提供されている場合は追加
+        if (previousResponseId) {
+            requestPayload.previous_response_id = previousResponseId;
+        }
+
         console.log('OpenAI Request:', JSON.stringify(requestPayload, null, 2));
 
         const response = await client.responses.create(requestPayload);
@@ -64,6 +69,7 @@ app.post('/api/chat', async (req, res) => {
 
         res.json({
             message: response.output_text || 'すみません、回答を生成できませんでした。',
+            responseId: response.id,
             debug: {
                 request: requestPayload,
                 response: response
