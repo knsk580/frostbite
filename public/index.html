@@ -30,7 +30,7 @@
             border: 1px solid #dee2e6;
             border-radius: 0.375rem;
             padding: 1rem;
-            background-color: #f8f9fa;
+            background-color: white;
         }
 
         .output-container {
@@ -50,15 +50,18 @@
         }
 
         .user-message {
-            background-color: #007bff;
-            color: white;
+            background-color: #f8f9fa;
+            color: #212529;
             margin-left: auto;
+            border: 1px solid #dee2e6;
         }
 
         .ai-message {
-            background-color: white;
-            border: 1px solid #dee2e6;
+            background-color: transparent;
+            border: none;
             margin-right: auto;
+            padding-left: 0;
+            padding-right: 0;
         }
 
         .typing-indicator {
@@ -130,7 +133,7 @@
                     <div class="card-body d-flex flex-column">
                         <div id="chatContainer" class="chat-container mb-3 flex-grow-1">
                             <div class="message ai-message">
-                                <strong>AI:</strong> こんにちは！何かご質問があれば、お気軽にお聞きください。
+                                こんにちは！何かご質問があれば、お気軽にお聞きください。
                             </div>
                         </div>
                         <div class="typing-indicator message" id="typingIndicator">

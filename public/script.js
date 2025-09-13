@@ -99,11 +99,7 @@ class ChatApp {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
 
-        if (sender === 'user') {
-            messageDiv.innerHTML = `<strong>あなた:</strong> ${this.escapeHtml(content)}`;
-        } else {
-            messageDiv.innerHTML = `<strong>AI:</strong> ${this.escapeHtml(content)}`;
-        }
+        messageDiv.innerHTML = this.escapeHtml(content);
 
         this.chatContainer.appendChild(messageDiv);
         this.scrollToBottom();
