@@ -106,7 +106,13 @@ class ChatApp {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
 
-        messageDiv.innerHTML = this.escapeHtml(content);
+        if (sender === 'ai') {
+            // AIメッセージはMarkdownとして解析
+            messageDiv.innerHTML = marked.parse(content);
+        } else {
+            // ユーザーメッセージはプレーンテキスト
+            messageDiv.innerHTML = this.escapeHtml(content);
+        }
 
         this.chatContainer.appendChild(messageDiv);
         this.scrollToBottom();
