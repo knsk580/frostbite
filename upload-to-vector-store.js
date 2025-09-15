@@ -27,6 +27,8 @@ async function uploadFilesToVectorStore() {
     // 環境変数の確認
     const vectorStoreId = process.env.VECTOR_STORE_ID;
     const apiKey = process.env.OPENAI_API_KEY;
+    const maxChunkSizeTokens = process.env.MAX_CHUNK_SIZE_TOKENS;
+    const chunkOverlapTokens = process.env.CHUNK_OVERLAP_TOKENS;
 
     if (!apiKey) {
         console.error('エラー: OPENAI_API_KEYが設定されていません');
@@ -39,6 +41,19 @@ async function uploadFilesToVectorStore() {
     }
 
     console.log(`対象ベクターストア: ${vectorStoreId}`);
+
+    // チャンク設定の表示
+    if (maxChunkSizeTokens || chunkOverlapTokens) {
+        console.log('チャンク設定:');
+        if (maxChunkSizeTokens) {
+            console.log(`   最大チャンクサイズ: ${maxChunkSizeTokens} tokens`);
+        }
+        if (chunkOverlapTokens) {
+            console.log(`   チャンク重複: ${chunkOverlapTokens} tokens`);
+        }
+    } else {
+        console.log('チャンク設定: 自動 (auto)');
+    }
 
     // upload_filesフォルダの存在確認
     const uploadFolderPath = path.join(__dirname, UPLOAD_FOLDER);
@@ -117,11 +132,31 @@ async function uploadFilesToVectorStore() {
                 console.log(`   ファイルアップロード完了: ${uploadedFile.id}`);
 
                 // ステップ2: ベクターストアにファイルを追加
+                const createParams = {
+                    file_id: uploadedFile.id
+                };
+
+                // チャンク戦略を設定
+                if (maxChunkSizeTokens || chunkOverlapTokens) {
+                    createParams.chunking_strategy = {
+                        type: 'static',
+                        static: {}
+                    };
+
+                    if (maxChunkSizeTokens) {
+                        createParams.chunking_strategy.static.max_chunk_size_tokens = parseInt(maxChunkSizeTokens);
+                    }
+
+                    if (chunkOverlapTokens) {
+                        createParams.chunking_strategy.static.chunk_overlap_tokens = parseInt(chunkOverlapTokens);
+                    }
+
+                    console.log(`   チャンク戦略を適用: max=${maxChunkSizeTokens || 'デフォルト'}, overlap=${chunkOverlapTokens || 'デフォルト'}`);
+                }
+
                 const vectorStoreFile = await client.vectorStores.files.create(
                     vectorStoreId,
-                    {
-                        file_id: uploadedFile.id
-                    }
+                    createParams
                 );
 
                 console.log(`   ベクターストアに追加完了: ${vectorStoreFile.id}`);
