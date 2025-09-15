@@ -41,10 +41,7 @@ async function clearVectorStore() {
     try {
         console.log('ベクターストア情報を取得中...');
         const vectorStore = await client.vectorStores.retrieve(vectorStoreId);
-        console.log(`   名前: ${vectorStore.name || '(名前なし)'}`);
-        console.log(`   作成日時: ${new Date(vectorStore.created_at * 1000).toLocaleString('ja-JP')}`);
-        console.log(`   ファイル数: ${vectorStore.file_counts?.total || 0}個`);
-        console.log(`   容量: ${Math.round((vectorStore.bytes || 0) / 1024)}KB`);
+        console.log(JSON.stringify(vectorStore, null, 2));
         console.log('');
     } catch (error) {
         console.warn(`警告: ベクターストア情報の取得に失敗: ${error.message}`);
