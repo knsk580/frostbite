@@ -7,7 +7,8 @@
     "scripts": {
         "start": "node server.js",
         "dev": "node server.js",
-        "clear-vector-store": "node clear-vector-store.js"
+        "clear-vector-store": "node clear-vector-store.js",
+        "upload-to-vector-store": "node upload-to-vector-store.js"
     },
     "dependencies": {
         "openai": "^4.57.0",
