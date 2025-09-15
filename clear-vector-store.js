@@ -97,13 +97,32 @@ async function clearVectorStore() {
         for (let i = 0; i < allFiles.length; i++) {
             const file = allFiles[i];
             try {
+                // ステップ1: ベクターストアからファイルを削除
+                console.log(`[${i + 1}/${allFiles.length}] ${file.id} をベクターストアから削除中...`);
                 await client.vectorStores.files.del(vectorStoreId, file.id);
+                console.log(`   ベクターストアから削除完了: ${file.id}`);
+
+                // ステップ2: OpenAI Files APIからファイルを完全削除
+                console.log(`   ${file.id} をFiles APIから完全削除中...`);
+                await client.files.del(file.id);
+                console.log(`   Files APIから削除完了: ${file.id}`);
+
                 successCount++;
-                console.log(`[${i + 1}/${allFiles.length}] ファイル削除完了: ${file.id}`);
+                console.log(`[${i + 1}/${allFiles.length}] 完全削除完了: ${file.id}`);
+
             } catch (error) {
                 errorCount++;
-                console.error(`[${i + 1}/${allFiles.length}] ファイル削除失敗: ${file.id}`);
+                console.error(`[${i + 1}/${allFiles.length}] 削除失敗: ${file.id}`);
                 console.error(`   エラー: ${error.message}`);
+
+                // エラーの詳細を判定
+                if (error.status === 404) {
+                    console.error('   (ファイルが既に削除されている可能性があります)');
+                } else if (error.message.includes('vector_store')) {
+                    console.error('   (ベクターストアからの削除でエラーが発生しました)');
+                } else if (error.message.includes('file')) {
+                    console.error('   (Files APIからの削除でエラーが発生しました)');
+                }
             }
         }
 
@@ -115,10 +134,12 @@ async function clearVectorStore() {
 
         if (errorCount === 0) {
             console.log('');
-            console.log('全てのファイルが正常に削除されました！');
+            console.log('全てのファイルが正常に完全削除されました！');
+            console.log('ベクターストアとFiles APIの両方からファイルを削除しました。');
         } else {
             console.log('');
             console.log('一部のファイルの削除に失敗しました');
+            console.log('失敗したファイルについては手動での確認をお勧めします。');
         }
 
     } catch (error) {
