@@ -56,6 +56,11 @@ app.post('/api/chat', async (req, res) => {
             max_output_tokens: 10000
         };
 
+        // instructionsが環境変数で設定されている場合は追加
+        if (process.env.INSTRUCTIONS) {
+            requestPayload.instructions = process.env.INSTRUCTIONS;
+        }
+
         // previous_response_idが提供されている場合は追加
         if (previousResponseId) {
             requestPayload.previous_response_id = previousResponseId;
@@ -104,6 +109,9 @@ app.listen(PORT, () => {
     }
     if (!process.env.VECTOR_STORE_ID) {
         console.warn('⚠️  VECTOR_STORE_IDが設定されていません。');
+    }
+    if (process.env.INSTRUCTIONS) {
+        console.log('📝 カスタムinstructionsが設定されています。');
     }
 });
 
