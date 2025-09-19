@@ -45,7 +45,7 @@ app.post('/api/chat', async (req, res) => {
 
         // OpenAI Responses APIリクエスト
         const requestPayload = {
-            model: "gpt-4o-mini",
+            model: process.env.MODEL || "gpt-4o-mini",
             input: [
                 { role: "user", content: message },
             ],
@@ -113,6 +113,7 @@ app.listen(PORT, () => {
     if (process.env.INSTRUCTIONS) {
         console.log('📝 カスタムinstructionsが設定されています。');
     }
+    console.log(`🤖 使用モデル: ${process.env.MODEL || "gpt-4o-mini"}`);
 });
 
 export default app;
