@@ -100,20 +100,20 @@ app.post('/api/chat', async (req, res) => {
 
 // サーバー起動
 app.listen(PORT, () => {
-    console.log(`🚀 サーバーが起動しました: http://localhost:${PORT}`);
-    console.log('✨ AI チャットアプリケーション準備完了！');
+    console.log(`サーバーが起動しました: http://localhost:${PORT}`);
+    console.log('AI チャットアプリケーション準備完了！');
 
     // 環境変数の確認
     if (!process.env.OPENAI_API_KEY) {
-        console.warn('⚠️  OPENAI_API_KEYが設定されていません。');
+        console.warn('OPENAI_API_KEYが設定されていません。');
     }
     if (!process.env.VECTOR_STORE_ID) {
-        console.warn('⚠️  VECTOR_STORE_IDが設定されていません。');
+        console.warn('VECTOR_STORE_IDが設定されていません。');
     }
     if (process.env.INSTRUCTIONS) {
-        console.log('📝 カスタムinstructionsが設定されています。');
+        console.log('カスタムinstructionsが設定されています。');
     }
-    console.log(`🤖 使用モデル: ${process.env.MODEL || "gpt-4o-mini"}`);
+    console.log(`使用モデル: ${process.env.MODEL || "gpt-4o-mini"}`);
 });
 
 export default app;
