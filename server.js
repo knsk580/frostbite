@@ -85,6 +85,16 @@ app.post('/api/chat', async (req, res) => {
             }
         }
 
+        // tool_choiceが環境変数で設定されている場合は追加
+        if (process.env.TOOL_CHOICE) {
+            const validChoices = ['auto', 'none', 'required'];
+            if (validChoices.includes(process.env.TOOL_CHOICE)) {
+                requestPayload.tool_choice = process.env.TOOL_CHOICE;
+            } else {
+                console.warn('TOOL_CHOICE環境変数は auto, none, required のいずれかを設定してください。');
+            }
+        }
+
         // previous_response_idが提供されている場合は追加
         if (previousResponseId) {
             requestPayload.previous_response_id = previousResponseId;
@@ -143,9 +153,13 @@ app.listen(PORT, () => {
     if (process.env.TEMPERATURE) {
         console.log(`temperature設定: ${process.env.TEMPERATURE}`);
     }
+    if (process.env.TOOL_CHOICE) {
+        console.log(`tool_choice設定: ${process.env.TOOL_CHOICE}`);
+    }
     console.log(`使用モデル: ${process.env.MODEL || "gpt-4o-mini"}`);
     console.log(`include設定: ${process.env.INCLUDE || "デフォルト"}`);
     console.log(`temperature設定: ${process.env.TEMPERATURE || "デフォルト"}`);
+    console.log(`tool_choice設定: ${process.env.TOOL_CHOICE || "auto"}`);
 });
 
 export default app;
