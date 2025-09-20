@@ -43,16 +43,33 @@ app.post('/api/chat', async (req, res) => {
             return res.status(500).json({ error: 'Vector Store IDが設定されていません。' });
         }
 
+        // file_searchツールの設定
+        const fileSearchTool = {
+            type: "file_search",
+            vector_store_ids: [vectorStoreId]
+        };
+
+        // max_num_resultsが環境変数で設定されている場合は追加
+        if (process.env.FILE_SEARCH_MAX_NUM_RESULTS) {
+            try {
+                const maxNumResults = parseInt(process.env.FILE_SEARCH_MAX_NUM_RESULTS);
+                if (maxNumResults >= 1 && maxNumResults <= 50) {
+                    fileSearchTool.max_num_results = maxNumResults;
+                } else {
+                    console.warn('FILE_SEARCH_MAX_NUM_RESULTS環境変数は1以上50以下の整数で設定してください。');
+                }
+            } catch (error) {
+                console.warn('FILE_SEARCH_MAX_NUM_RESULTS環境変数の解析に失敗しました:', error.message);
+            }
+        }
+
         // OpenAI Responses APIリクエスト
         const requestPayload = {
             model: process.env.MODEL || "gpt-4o-mini",
             input: [
                 { role: "user", content: message },
             ],
-            tools: [{
-                type: "file_search",
-                vector_store_ids: [vectorStoreId]
-            }],
+            tools: [fileSearchTool],
             max_output_tokens: 10000
         };
 
@@ -156,10 +173,14 @@ app.listen(PORT, () => {
     if (process.env.TOOL_CHOICE) {
         console.log(`tool_choice設定: ${process.env.TOOL_CHOICE}`);
     }
+    if (process.env.FILE_SEARCH_MAX_NUM_RESULTS) {
+        console.log(`file_search max_num_results設定: ${process.env.FILE_SEARCH_MAX_NUM_RESULTS}`);
+    }
     console.log(`使用モデル: ${process.env.MODEL || "gpt-4o-mini"}`);
     console.log(`include設定: ${process.env.INCLUDE || "デフォルト"}`);
     console.log(`temperature設定: ${process.env.TEMPERATURE || "デフォルト"}`);
     console.log(`tool_choice設定: ${process.env.TOOL_CHOICE || "auto"}`);
+    console.log(`file_search max_num_results設定: ${process.env.FILE_SEARCH_MAX_NUM_RESULTS || "デフォルト"}`);
 });
 
 export default app;
