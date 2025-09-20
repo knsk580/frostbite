@@ -61,6 +61,21 @@ app.post('/api/chat', async (req, res) => {
             requestPayload.instructions = process.env.INSTRUCTIONS;
         }
 
+        // includeが環境変数で設定されている場合は追加
+        if (process.env.INCLUDE) {
+            try {
+                // カンマ区切りの文字列を配列に変換
+                requestPayload.include = process.env.INCLUDE.split(',').map(item => item.trim());
+            } catch (error) {
+                console.warn('INCLUDE環境変数の解析に失敗しました:', error.message);
+            }
+        }
+
+        // service_tierが環境変数で設定されている場合は追加
+        if (process.env.SERVICE_TIER) {
+            requestPayload.service_tier = process.env.SERVICE_TIER;
+        }
+
         // previous_response_idが提供されている場合は追加
         if (previousResponseId) {
             requestPayload.previous_response_id = previousResponseId;
@@ -113,7 +128,15 @@ app.listen(PORT, () => {
     if (process.env.INSTRUCTIONS) {
         console.log('カスタムinstructionsが設定されています。');
     }
+    if (process.env.INCLUDE) {
+        console.log(`include設定: ${process.env.INCLUDE}`);
+    }
+    if (process.env.SERVICE_TIER) {
+        console.log(`service_tier設定: ${process.env.SERVICE_TIER}`);
+    }
     console.log(`使用モデル: ${process.env.MODEL || "gpt-4o-mini"}`);
+    console.log(`include設定: ${process.env.INCLUDE || "デフォルト"}`);
+    console.log(`service_tier設定: ${process.env.SERVICE_TIER || "auto"}`);
 });
 
 export default app;
