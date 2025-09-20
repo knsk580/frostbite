@@ -71,6 +71,20 @@ app.post('/api/chat', async (req, res) => {
             }
         }
 
+        // temperatureが環境変数で設定されている場合は追加
+        if (process.env.TEMPERATURE) {
+            try {
+                const temperature = parseFloat(process.env.TEMPERATURE);
+                if (temperature >= 0 && temperature <= 2) {
+                    requestPayload.temperature = temperature;
+                } else {
+                    console.warn('TEMPERATURE環境変数は0から2の間で設定してください。');
+                }
+            } catch (error) {
+                console.warn('TEMPERATURE環境変数の解析に失敗しました:', error.message);
+            }
+        }
+
         // previous_response_idが提供されている場合は追加
         if (previousResponseId) {
             requestPayload.previous_response_id = previousResponseId;
@@ -126,8 +140,12 @@ app.listen(PORT, () => {
     if (process.env.INCLUDE) {
         console.log(`include設定: ${process.env.INCLUDE}`);
     }
+    if (process.env.TEMPERATURE) {
+        console.log(`temperature設定: ${process.env.TEMPERATURE}`);
+    }
     console.log(`使用モデル: ${process.env.MODEL || "gpt-4o-mini"}`);
     console.log(`include設定: ${process.env.INCLUDE || "デフォルト"}`);
+    console.log(`temperature設定: ${process.env.TEMPERATURE || "デフォルト"}`);
 });
 
 export default app;
