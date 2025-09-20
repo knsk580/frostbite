@@ -63,6 +63,22 @@ app.post('/api/chat', async (req, res) => {
             }
         }
 
+        // ranking_optionsのscore_thresholdが環境変数で設定されている場合は追加
+        if (process.env.FILE_SEARCH_SCORE_THRESHOLD) {
+            try {
+                const scoreThreshold = parseFloat(process.env.FILE_SEARCH_SCORE_THRESHOLD);
+                if (scoreThreshold >= 0 && scoreThreshold <= 1) {
+                    fileSearchTool.ranking_options = {
+                        score_threshold: scoreThreshold
+                    };
+                } else {
+                    console.warn('FILE_SEARCH_SCORE_THRESHOLD環境変数は0以上1以下の数値で設定してください。');
+                }
+            } catch (error) {
+                console.warn('FILE_SEARCH_SCORE_THRESHOLD環境変数の解析に失敗しました:', error.message);
+            }
+        }
+
         // OpenAI Responses APIリクエスト
         const requestPayload = {
             model: process.env.MODEL || "gpt-4o-mini",
@@ -176,11 +192,15 @@ app.listen(PORT, () => {
     if (process.env.FILE_SEARCH_MAX_NUM_RESULTS) {
         console.log(`file_search max_num_results設定: ${process.env.FILE_SEARCH_MAX_NUM_RESULTS}`);
     }
+    if (process.env.FILE_SEARCH_SCORE_THRESHOLD) {
+        console.log(`file_search score_threshold設定: ${process.env.FILE_SEARCH_SCORE_THRESHOLD}`);
+    }
     console.log(`使用モデル: ${process.env.MODEL || "gpt-4o-mini"}`);
     console.log(`include設定: ${process.env.INCLUDE || "デフォルト"}`);
     console.log(`temperature設定: ${process.env.TEMPERATURE || "デフォルト"}`);
     console.log(`tool_choice設定: ${process.env.TOOL_CHOICE || "auto"}`);
     console.log(`file_search max_num_results設定: ${process.env.FILE_SEARCH_MAX_NUM_RESULTS || "デフォルト"}`);
+    console.log(`file_search score_threshold設定: ${process.env.FILE_SEARCH_SCORE_THRESHOLD || "デフォルト"}`);
 });
 
 export default app;
